@@ -1,0 +1,248 @@
+{
+  "meta": {
+    "title": "Alvaro & Carito",
+    "description": "Alvaro and Carito are getting married on 15 May 2027 in Cartagena. Schedule, venue, RSVP and photographs.",
+    "coupleNames": "Alvaro & Carito"
+  },
+  "theme": {
+    "fonts": { "display": "Cormorant Garamond", "body": "Jost" },
+    "displayScale": 1,
+    "radius": 0.75,
+    "colors": {
+      "canvas": "#f6f2ec",
+      "surface": "#fffdfa",
+      "ink": "#3d3730",
+      "display": "#231f1b",
+      "muted": "#8a8074",
+      "accent": "#9a7d60",
+      "accentInk": "#ffffff",
+      "line": "#dfd6ca"
+    }
+  },
+  "nav": {
+    "enabled": true,
+    "brand": "A & C",
+    "ctaLabel": "RSVP",
+    "ctaHref": "#sec-rsvp"
+  },
+  "guestPhotos": {
+    "enabled": true,
+    "headline": "Share your photographs",
+    "intro": "Anything you took today — the ceremony, the dancing, the quiet moments in between. They appear on the website straight away.",
+    "thanks": "Thank you. Your photographs are on the website now.",
+    "shareUrl": "",
+    "whatsappNumber": "",
+    "whatsappLabel": "Or send them on WhatsApp",
+    "whatsappMessage": "Hi! Here are my photos from the wedding:"
+  },
+  "sections": [
+    {
+      "id": "sec-hero",
+      "type": "hero",
+      "navLabel": "",
+      "hidden": false,
+      "style": { "bg": "", "ink": "", "display": "", "accent": "", "padding": "roomy", "width": "full", "align": "center" },
+      "eyebrow": "Together with our families",
+      "names": "Alvaro & Carito",
+      "tagline": "After eleven years, a dog and four cities, we are finally doing this properly. We would love you there.",
+      "date": "Saturday, 15 May 2027",
+      "place": "Cartagena, Colombia",
+      "ctaLabel": "RSVP",
+      "ctaHref": "#sec-rsvp",
+      "collage": [
+        { "src": "./uploads/photo-11.jpg", "alt": "The two of us on the coast", "caption": "", "focusX": 50, "focusY": 40 },
+        { "src": "./uploads/photo-02.jpg", "alt": "Dancing at a friend's wedding", "caption": "", "focusX": 50, "focusY": 45 },
+        { "src": "./uploads/photo-08.jpg", "alt": "A quiet morning", "caption": "", "focusX": 50, "focusY": 35 },
+        { "src": "./uploads/photo-06.jpg", "alt": "Flowers from the market", "caption": "", "focusX": 50, "focusY": 50 },
+        { "src": "./uploads/photo-04.jpg", "alt": "The old town at dusk", "caption": "", "focusX": 50, "focusY": 50 }
+      ],
+      "useGuestPhotos": true,
+      "collageCount": 7
+    },
+    {
+      "id": "sec-countdown",
+      "type": "countdown",
+      "navLabel": "",
+      "hidden": false,
+      "style": { "bg": "", "ink": "", "display": "", "accent": "", "padding": "tight", "width": "normal", "align": "center" },
+      "eyebrow": "Counting down",
+      "title": "Until we say I do",
+      "target": "2027-05-15T16:00:00",
+      "note": "Cartagena time",
+      "pastMessage": "Married. Thank you for celebrating with us."
+    },
+    {
+      "id": "sec-story",
+      "type": "story",
+      "navLabel": "Our story",
+      "hidden": false,
+      "style": { "bg": "", "ink": "", "display": "", "accent": "", "padding": "normal", "width": "normal", "align": "left" },
+      "eyebrow": "Our story",
+      "title": "How we got here",
+      "body": [
+        "We met at a birthday neither of us wanted to go to. Alvaro was on the balcony complaining about the music; Carito had just changed it. We argued about it for an hour and have been arguing happily ever since.",
+        "Eleven years, one small stubborn dog and four cities later, we are getting married in the city where Carito grew up — a short walk from the square where we first said we would.",
+        "We would love you to be there for it."
+      ],
+      "image": { "src": "./uploads/photo-12.jpg", "alt": "Alvaro and Carito", "caption": "", "focusX": 50, "focusY": 40 },
+      "imageSide": "right"
+    },
+    {
+      "id": "sec-banner",
+      "type": "banner",
+      "navLabel": "",
+      "hidden": false,
+      "style": { "bg": "", "ink": "", "display": "", "accent": "", "padding": "tight", "width": "full", "align": "center" },
+      "image": { "src": "./uploads/photo-09.jpg", "alt": "The coast at golden hour", "caption": "", "focusX": 50, "focusY": 55 },
+      "overline": "15 May 2027",
+      "title": "Cartagena",
+      "height": "tall"
+    },
+    {
+      "id": "sec-schedule",
+      "type": "schedule",
+      "navLabel": "Schedule",
+      "hidden": false,
+      "style": { "bg": "", "ink": "", "display": "", "accent": "", "padding": "normal", "width": "normal", "align": "center" },
+      "eyebrow": "The day",
+      "title": "Schedule",
+      "intro": "Everything happens at Hacienda San Miguel. Come as early as you like.",
+      "items": [
+        { "time": "3:30 pm", "title": "Arrival", "place": "The courtyard", "desc": "Cold drinks and shade. Please be seated by ten to four." },
+        { "time": "4:00 pm", "title": "Ceremony", "place": "The garden", "desc": "Thirty minutes, outdoors, on grass." },
+        { "time": "5:00 pm", "title": "Cocktails", "place": "The terrace", "desc": "Canapés, photographs and the good rum." },
+        { "time": "7:00 pm", "title": "Dinner", "place": "The old hall", "desc": "Seated dinner, short speeches, we promise." },
+        { "time": "9:30 pm", "title": "Dancing", "place": "The courtyard", "desc": "Until the neighbours complain." },
+        { "time": "1:00 am", "title": "Carriages", "place": "The gate", "desc": "Taxis arranged back into the old town." }
+      ]
+    },
+    {
+      "id": "sec-venue",
+      "type": "map",
+      "navLabel": "Venue",
+      "hidden": false,
+      "style": { "bg": "", "ink": "", "display": "", "accent": "", "padding": "normal", "width": "normal", "align": "center" },
+      "eyebrow": "Where",
+      "title": "Hacienda San Miguel",
+      "venue": "Hacienda San Miguel",
+      "address": "Carrera 4 #36-12, Centro Histórico, Cartagena, Colombia",
+      "note": "Forty minutes from the airport. There is parking on site, and taxis are easy to find at the gate.",
+      "mapHref": "https://maps.google.com/?q=Cartagena+Colombia",
+      "embedSrc": ""
+    },
+    {
+      "id": "sec-details",
+      "type": "details",
+      "navLabel": "Details",
+      "hidden": false,
+      "style": { "bg": "#fffdfa", "ink": "", "display": "", "accent": "", "padding": "normal", "width": "wide", "align": "center" },
+      "eyebrow": "Good to know",
+      "title": "Details",
+      "intro": "",
+      "cards": [
+        { "title": "What to wear", "body": "Garden formal. Linen is your friend — it will be warm, and the ceremony is on grass, so think carefully about heels.", "linkLabel": "", "linkHref": "" },
+        { "title": "Getting there", "body": "Fly into Rafael Núñez (CTG). The venue is forty minutes from the airport and fifteen from the old town.", "linkLabel": "Open in Maps", "linkHref": "https://maps.google.com/?q=Cartagena+Colombia" },
+        { "title": "Staying over", "body": "We have held rooms at two hotels in the old town at a reduced rate. Mention our names when you book.", "linkLabel": "See hotels", "linkHref": "" },
+        { "title": "The weather", "body": "Hot and bright, around 31°C, with a chance of a short evening shower. Most of the evening is under cover.", "linkLabel": "", "linkHref": "" }
+      ]
+    },
+    {
+      "id": "sec-rsvp",
+      "type": "rsvp",
+      "navLabel": "RSVP",
+      "hidden": false,
+      "style": { "bg": "", "ink": "", "display": "", "accent": "", "padding": "normal", "width": "narrow", "align": "center" },
+      "eyebrow": "Join us",
+      "title": "Will you come?",
+      "body": "One form per invitation, and please include everybody named on it. Tell us about anything you cannot eat while you are there.",
+      "deadline": "Kindly reply by 1 March 2027",
+      "buttonLabel": "Reply now",
+      "buttonHref": ""
+    },
+    {
+      "id": "sec-share",
+      "type": "share",
+      "navLabel": "Share photos",
+      "hidden": false,
+      "style": { "bg": "#fffdfa", "ink": "", "display": "", "accent": "", "padding": "normal", "width": "normal", "align": "center" },
+      "eyebrow": "Your photographs",
+      "title": "Send us your photos",
+      "intro": "Point your camera at the code below. Whatever you send lands on this page within seconds, and everybody can download it afterwards.",
+      "qrCaption": "Scan to add your photographs",
+      "buttonLabel": "Add photos"
+    },
+    {
+      "id": "sec-gallery",
+      "type": "gallery",
+      "navLabel": "Photos",
+      "hidden": false,
+      "style": { "bg": "", "ink": "", "display": "", "accent": "", "padding": "normal", "width": "wide", "align": "center" },
+      "eyebrow": "Photographs",
+      "title": "The album",
+      "intro": "Ours to begin with, and yours as they arrive. Tap any photograph to see it full size or download it.",
+      "photos": [
+        { "src": "./uploads/photo-01.jpg", "alt": "The table before everyone sat down", "caption": "The table, before", "focusX": 50, "focusY": 50 },
+        { "src": "./uploads/photo-03.jpg", "alt": "Rings and flowers", "caption": "", "focusX": 50, "focusY": 50 },
+        { "src": "./uploads/photo-05.jpg", "alt": "The ceremony", "caption": "", "focusX": 50, "focusY": 45 },
+        { "src": "./uploads/photo-07.jpg", "alt": "Getting ready", "caption": "", "focusX": 50, "focusY": 35 },
+        { "src": "./uploads/photo-10.jpg", "alt": "The old town", "caption": "", "focusX": 50, "focusY": 50 },
+        { "src": "./uploads/photo-02.jpg", "alt": "Dancing", "caption": "", "focusX": 50, "focusY": 45 }
+      ],
+      "useGuestPhotos": true,
+      "allowDownload": true,
+      "columns": 3
+    },
+    {
+      "id": "sec-gifts",
+      "type": "registry",
+      "navLabel": "Gifts",
+      "hidden": false,
+      "style": { "bg": "", "ink": "", "display": "", "accent": "", "padding": "normal", "width": "normal", "align": "center" },
+      "eyebrow": "Gifts",
+      "title": "If you insist",
+      "intro": "Getting you to Cartagena is gift enough — most of you are crossing an ocean for this. But we are asked often, so: ",
+      "items": [
+        { "name": "The honeymoon", "note": "Two weeks somewhere with no signal.", "linkLabel": "Contribute", "linkHref": "" },
+        { "name": "The registry", "note": "A short, unromantic list of things for the flat.", "linkLabel": "Open registry", "linkHref": "" },
+        { "name": "Fundación Juanfe", "note": "If you would rather give it away — so would we.", "linkLabel": "Donate", "linkHref": "" }
+      ]
+    },
+    {
+      "id": "sec-faq",
+      "type": "faq",
+      "navLabel": "FAQ",
+      "hidden": false,
+      "style": { "bg": "", "ink": "", "display": "", "accent": "", "padding": "normal", "width": "narrow", "align": "center" },
+      "eyebrow": "Questions",
+      "title": "Before you ask",
+      "intro": "",
+      "items": [
+        { "q": "Can I bring someone?", "a": "Your invitation names everyone we have a seat for. If it is unclear, just ask us — it is not an awkward question." },
+        { "q": "Are children welcome?", "a": "Very. Tell us their ages on the RSVP and we will sort out food and a quiet room for later in the evening." },
+        { "q": "What time should I actually arrive?", "a": "Half past three. The ceremony starts at four exactly and the gate is a five-minute walk from the garden." },
+        { "q": "Is there parking?", "a": "Yes, on site and free. There will also be taxis at the gate from midnight." },
+        { "q": "I cannot eat something. Is that a problem?", "a": "Not at all. Put it on the RSVP form and the kitchen will take care of it." },
+        { "q": "Where do I send my photos?", "a": "Scan the code in the Share photos section above, or send them on WhatsApp. They appear on this page immediately." }
+      ]
+    },
+    {
+      "id": "sec-quote",
+      "type": "quote",
+      "navLabel": "",
+      "hidden": false,
+      "style": { "bg": "", "ink": "", "display": "", "accent": "", "padding": "normal", "width": "narrow", "align": "center" },
+      "quote": "Come hungry, wear linen, and stay for the last song.",
+      "attribution": "Alvaro & Carito"
+    },
+    {
+      "id": "sec-footer",
+      "type": "footer",
+      "navLabel": "",
+      "hidden": false,
+      "style": { "bg": "#231f1b", "ink": "#c9c0b4", "display": "#f6f2ec", "accent": "#c9a882", "padding": "normal", "width": "normal", "align": "center" },
+      "names": "Alvaro & Carito",
+      "message": "15 May 2027 · Cartagena, Colombia",
+      "hashtag": "#AlvaroAndCarito"
+    }
+  ]
+}

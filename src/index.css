@@ -1,0 +1,199 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* ── Site palette ────────────────────────────────────────────────────────
+     Channel triplets ("R G B") so Tailwind opacity modifiers work. These are
+     only fallbacks: ThemeStyle overwrites them at runtime from the theme in
+     site-content.json, which the admin theme editor writes to. */
+  :root {
+    --ac-canvas: 246 242 236;
+    --ac-surface: 255 253 250;
+    --ac-ink: 61 55 48;
+    --ac-display: 35 31 27;
+    --ac-muted: 138 128 116;
+    --ac-accent: 154 125 96;
+    --ac-accent-ink: 255 255 255;
+    --ac-line: 223 214 202;
+
+    --ac-font-display: 'Cormorant Garamond';
+    --ac-font-body: 'Jost';
+    --ac-display-scale: 1;
+
+    /* Admin chrome (shadcn primitives) — deliberately independent of the
+       site palette so the toolbar stays readable on any background. */
+    --background: 0 0% 100%;
+    --foreground: 224 20% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 20% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 20% 12%;
+    --primary: 25 45% 42%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 30 20% 95%;
+    --secondary-foreground: 224 20% 12%;
+    --muted: 30 20% 95%;
+    --muted-foreground: 225 8% 45%;
+    --destructive: 0 72% 48%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 30 14% 88%;
+    --input: 30 14% 88%;
+    --ring: 25 45% 42%;
+    --radius: 0.75rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-canvas text-ink font-body antialiased;
+    font-synthesis-weight: none;
+  }
+
+  ::selection {
+    background: rgb(var(--ac-accent) / 0.22);
+  }
+}
+
+@layer components {
+  /* Editorial type ------------------------------------------------------- */
+  .eyebrow {
+    @apply font-body text-[11px] uppercase tracking-eyebrow text-muted;
+    font-weight: 500;
+  }
+
+  .display-xl {
+    @apply font-display text-display;
+    font-weight: 400;
+    font-size: clamp(3rem, 12vw, 8.5rem);
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+  }
+
+  .display-lg {
+    @apply font-display text-display;
+    font-weight: 400;
+    font-size: clamp(2.25rem, 6vw, 4.25rem);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+  }
+
+  .rule {
+    @apply h-px w-full bg-line;
+  }
+
+  /* A hairline flourish used between editorial blocks. */
+  .flourish {
+    @apply flex items-center justify-center gap-3 text-accent;
+  }
+  .flourish::before,
+  .flourish::after {
+    content: '';
+    @apply h-px w-12 bg-line sm:w-20;
+  }
+
+  .paper {
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, rgb(var(--ac-accent) / 0.07), transparent 70%),
+      radial-gradient(ellipse 60% 40% at 90% 110%, rgb(var(--ac-accent) / 0.05), transparent 70%);
+  }
+}
+
+@layer utilities {
+  /* Scroll reveal — driven by IntersectionObserver in useReveal(). */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { scrollbar-width: none; }
+}
+
+/* ── Admin affordances ──────────────────────────────────────────────────── */
+
+/* The editing tools live inside the page, so without this they inherit the
+   site's palette and typeface — and a dark palette would leave the panels
+   with near-white text on a white background. */
+.admin-surface,
+.admin-surface h1,
+.admin-surface h2,
+.admin-surface h3,
+.admin-surface h4 {
+  color: hsl(var(--foreground));
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-weight: inherit;
+}
+
+.admin-editable {
+  cursor: text;
+  border-radius: 0.25rem;
+  outline: 1px dashed rgb(var(--ac-accent) / 0.45);
+  outline-offset: 3px;
+  transition: outline-color 0.2s ease, background-color 0.2s ease;
+}
+
+.admin-editable:hover {
+  outline-color: rgb(var(--ac-accent) / 0.85);
+  background-color: rgb(var(--ac-accent) / 0.07);
+}
+
+.admin-editable:focus {
+  outline: 2px solid rgb(var(--ac-accent));
+  outline-offset: 3px;
+  background-color: rgb(var(--ac-accent) / 0.1);
+}
+
+/* An empty editable would collapse to zero height and be unclickable. */
+.admin-editable:empty::before {
+  content: attr(data-placeholder);
+  @apply text-muted/70;
+}
+
+/* Drag and drop ---------------------------------------------------------- */
+
+/* The element being dragged follows the pointer; everything else slides. */
+.ac-dragging {
+  position: relative;
+  z-index: 60;
+  cursor: grabbing;
+  opacity: 0.92;
+  box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.35);
+  border-radius: 1rem;
+}
+
+.ac-drag-shift {
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* While a drag is in flight, stop the page from selecting text or panning. */
+.ac-drag-active,
+.ac-drag-active * {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+.ac-drag-active {
+  touch-action: none;
+  cursor: grabbing;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .ac-drag-shift { transition: none; }
+}
