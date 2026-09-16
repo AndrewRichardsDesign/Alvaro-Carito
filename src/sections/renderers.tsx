@@ -16,6 +16,7 @@ import { HeroCollage } from '@/components/HeroCollage';
 import { PhotoGallery } from '@/components/PhotoGallery';
 import { QrCode } from '@/components/QrCode';
 import { shareUrl, whatsappUrl } from '@/lib/share';
+import { useEvents } from '@/lib/photos';
 import { cn } from '@/lib/utils';
 
 /** Dispatch a section to its renderer. `base` is its path, e.g. "sections.3". */
@@ -416,14 +417,35 @@ function Rsvp({ section, base }: { section: RsvpSection; base: string }) {
 function Share({ section, base }: { section: ShareSection; base: string }) {
   const { content } = useContent();
   const config = content.guestPhotos;
-  const url = shareUrl(config.shareUrl);
-  const wa = whatsappUrl(config.whatsappNumber, config.whatsappMessage);
+  const { events } = useEvents(config.enabled);
+  const choices = useMemo(() => events.filter((e) => e.active), [events]);
+  const [picked, setPicked] = useState<string>('');
+
+  // With several parts of the weekend, the code on screen can be pointed at
+  // one of them — which is how the printed table cards work too.
+  const event = choices.find((e) => e.slug === picked);
+  const url = shareUrl(config.shareUrl, event?.slug);
+  const wa = whatsappUrl(config.whatsappNumber, config.whatsappMessage, event?.slug);
 
   return (
     <SectionShell section={section}>
       <SectionHeader base={base} align={section.style.align}>
         <Intro path={`${base}.intro`} />
       </SectionHeader>
+
+      {choices.length > 1 && (
+        <div className="mt-8 flex flex-wrap justify-center gap-2">
+          <EventChip label="The whole weekend" active={!event} onClick={() => setPicked('')} />
+          {choices.map((choice) => (
+            <EventChip
+              key={choice.id}
+              label={choice.name}
+              active={event?.id === choice.id}
+              onClick={() => setPicked(choice.slug)}
+            />
+          ))}
+        </div>
+      )}
 
       <div className="mt-12 flex flex-col items-center gap-10 sm:flex-row sm:items-center sm:justify-center sm:gap-14">
         <figure className="flex flex-col items-center">
@@ -461,6 +483,22 @@ function Share({ section, base }: { section: ShareSection; base: string }) {
         </div>
       </div>
     </SectionShell>
+  );
+}
+
+function EventChip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={cn(
+        'rounded-full border px-4 py-1.5 text-[0.7rem] uppercase tracking-[0.16em] transition-colors',
+        active ? 'border-accent bg-accent text-accent-ink' : 'border-line text-muted hover:border-accent/60 hover:text-accent'
+      )}
+    >
+      {label}
+    </button>
   );
 }
 

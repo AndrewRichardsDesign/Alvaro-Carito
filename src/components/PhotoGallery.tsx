@@ -5,7 +5,7 @@ import { AdminList } from '@/content/AdminList';
 import { useContent } from '@/content/ContentContext';
 import { photo as blankPhoto } from '@/content/sectionTemplates';
 import type { PhotoRef } from '@/content/types';
-import { downloadAll, downloadPhoto, photoAdmin, photoFilename, useGuestPhotos } from '@/lib/photos';
+import { downloadAll, downloadPhoto, photoAdmin, photoFilename, useEvents, useGuestPhotos } from '@/lib/photos';
 import { getPhotoAdminKey } from '@/lib/photoKey';
 import { cn } from '@/lib/utils';
 
@@ -15,6 +15,9 @@ interface Viewable {
   caption: string;
   credit: string;
 }
+
+/** "All" plus one tab per event that actually has photographs in it. */
+const ALL = '__all__';
 
 const COLUMNS: Record<number, string> = {
   2: 'sm:grid-cols-2',
@@ -41,28 +44,51 @@ export function PhotoGallery({
 }) {
   const { isAdmin } = useContent();
   const { photos: guests, refresh } = useGuestPhotos(useGuests);
+  const { events } = useEvents(useGuests);
+  const [filter, setFilter] = useState<string>(ALL);
   const [viewing, setViewing] = useState<number | null>(null);
   const [zipping, setZipping] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
+  // Only offer a filter for events that have something in them — an empty tab
+  // is just a promise the page can't keep.
+  const tabs = useMemo(() => {
+    if (!useGuests) return [];
+    const counts = new Map<string, number>();
+    for (const g of guests) if (g.eventId) counts.set(g.eventId, (counts.get(g.eventId) ?? 0) + 1);
+    return events
+      .filter((e) => e.active && counts.has(e.id))
+      .map((e) => ({ id: e.id, name: e.name, count: counts.get(e.id) ?? 0 }));
+  }, [events, guests, useGuests]);
+
+  // A filter that no longer exists (its event was deleted) would show nothing
+  // at all, with no way back.
+  const active = filter !== ALL && tabs.some((t) => t.id === filter) ? filter : ALL;
+
   const own: Viewable[] = useMemo(
     () =>
-      photos
-        .filter((p) => p.src)
-        .map((p) => ({ src: p.src, alt: p.alt, caption: p.caption ?? '', credit: '' })),
-    [photos]
+      // The couple's own photographs belong to the album as a whole, not to
+      // any one part of the weekend, so a filtered view leaves them out.
+      active !== ALL
+        ? []
+        : photos
+            .filter((p) => p.src)
+            .map((p) => ({ src: p.src, alt: p.alt, caption: p.caption ?? '', credit: '' })),
+    [photos, active]
   );
   const guestViewables: Viewable[] = useMemo(
     () =>
       useGuests
-        ? guests.map((g) => ({
-            src: g.url,
-            alt: g.caption || 'A guest photograph',
-            caption: g.caption,
-            credit: g.uploader,
-          }))
+        ? guests
+            .filter((g) => active === ALL || g.eventId === active)
+            .map((g) => ({
+              src: g.url,
+              alt: g.caption || 'A guest photograph',
+              caption: g.caption,
+              credit: g.uploader,
+            }))
         : [],
-    [guests, useGuests]
+    [guests, useGuests, active]
   );
   // Memoised because the "download everything" callback closes over it.
   const all = useMemo(() => [...own, ...guestViewables], [own, guestViewables]);
@@ -101,6 +127,21 @@ export function PhotoGallery({
 
   return (
     <div className="mt-12">
+      {tabs.length > 1 && !isAdmin && (
+        <div className="no-scrollbar mb-8 flex flex-wrap justify-center gap-2 overflow-x-auto">
+          <FilterTab label="Everything" active={active === ALL} onClick={() => setFilter(ALL)} />
+          {tabs.map((tab) => (
+            <FilterTab
+              key={tab.id}
+              label={tab.name}
+              count={tab.count}
+              active={active === tab.id}
+              onClick={() => setFilter(tab.id)}
+            />
+          ))}
+        </div>
+      )}
+
       {/* The couple's own photographs. */}
       {isAdmin ? (
         <div className="group/list">
@@ -197,6 +238,27 @@ export function PhotoGallery({
         />
       )}
     </div>
+  );
+}
+
+function FilterTab({
+  label, count, active, onClick,
+}: { label: string; count?: number; active: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={cn(
+        'whitespace-nowrap rounded-full border px-4 py-1.5 text-[0.7rem] uppercase tracking-[0.16em] transition-colors',
+        active
+          ? 'border-accent bg-accent text-accent-ink'
+          : 'border-line text-muted hover:border-accent/60 hover:text-accent'
+      )}
+    >
+      {label}
+      {count != null && <span className="ml-2 opacity-60 tabular-nums">{count}</span>}
+    </button>
   );
 }
 

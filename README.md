@@ -67,6 +67,42 @@ Print it for the tables. It works on any phone camera.
 This needs credentials from one of the two providers — see below. Until you add
 them the QR route works on its own, and the WhatsApp button stays hidden.
 
+### Which part of the weekend?
+
+A wedding is rarely one event, so a photograph has to say which one it belongs
+to. The hard part isn't asking — it's that people send photos first and read
+messages second. Three things handle that, in order of how little they bother
+the guest:
+
+1. **The QR code already knows.** Each event has its own code and its own
+   pre-filled WhatsApp link. Print the welcome-drinks one for the
+   welcome-drinks tables, and everything scanned from it arrives already filed.
+   Nobody is asked anything. Get the codes from **Events** in the admin bar —
+   each has a **Download PNG** button sized for printing.
+2. **Otherwise they are asked, once.** On Meta they get a native list — a
+   *Choose an event* button that opens a picker, so they tap rather than type.
+   On Twilio they get a numbered list to reply to, because Twilio's interactive
+   messages need pre-registered templates that can't track events you edit from
+   the website.
+3. **Photos that arrive before the answer are held, not lost.** They stay off
+   the site until the guest picks, and are filed retroactively the moment they
+   do. If somebody never answers, the photos are waiting in **Events → Waiting
+   for an answer**, where you can file or delete them by hand.
+
+The choice then sticks for six hours, so a guest sending forty photos is asked
+once rather than forty times. Sending **change** reopens the picker, and a
+photo's caption can name an event outright (`#party`, or just `The party`).
+
+With **no events defined**, nobody is ever asked and every photograph simply
+joins the album — which is the right behaviour for a single-day wedding. With
+exactly one, it is used automatically.
+
+Events are edited under **Events** in the admin bar: rename them, drag them
+into order, retire one after it has happened, and get its QR code and links.
+Keep names to 24 characters and descriptions to 72 — that is all a WhatsApp
+list row can show, and the field enforces it. On the site, the album grows
+filter tabs for whichever events actually have photographs in them.
+
 Photos live in Supabase rather than in this repository, because they arrive from
 strangers at all hours. Row-level security lets anyone *add* a photo and nobody
 alter or delete someone else's; hiding and deleting go through an edge function
@@ -81,8 +117,10 @@ Project `alvaro-carito-wedding` (`aipmyivogigxjexgnsys`) is already provisioned:
 | --- | --- |
 | `public.photos` | One row per photograph, with caption, sender and source |
 | `guest-photos` bucket | The files, public to read, writable only under `guest/` |
-| `photo-admin` function | Hide / delete / feature, behind a shared secret |
-| `whatsapp-intake` function | Receives WhatsApp photos from Meta or Twilio |
+| `events` | The parts of the weekend, and the order they're offered in |
+| `whatsapp_senders` | Who chose what, and when to stop asking. Phone numbers, so service-role only |
+| `photo-admin` function | Hide / delete / file photos, and manage events, behind a shared secret |
+| `whatsapp-intake` function | Receives WhatsApp photos from Meta or Twilio, and runs the event conversation |
 
 The URL and publishable key are in `src/lib/config.ts` — both are designed to
 sit in a browser bundle. `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in a
@@ -114,7 +152,10 @@ take a few days.
 | `WHATSAPP_TOKEN` | A permanent access token for the WhatsApp Business account |
 | `WHATSAPP_APP_SECRET` | App → Settings → Basic. Enables signature checking |
 
-Subscribe the webhook to the **messages** field.
+Subscribe the webhook to the **messages** field. The interactive picker is sent
+inside WhatsApp's 24-hour service window, which a guest opens by messaging you
+first — so it always works in reply, but you cannot start the conversation days
+later without a paid template.
 
 **Twilio** — the sandbox works in minutes with no verification, costs a few
 cents a message, and guests must join the sandbox with a code first.
@@ -160,8 +201,9 @@ src/
     ContentEditorPanel.tsx  a generated form for every field, including links
     sectionTemplates.ts     the section palette
   sections/          one renderer per section type, plus the page canvas
+    EventsPanel.tsx    the parts of the weekend, with per-event QR codes
   components/        Sortable (drag and drop), cropper, collage, gallery, QR
-  lib/               theme, photos (Supabase), zip, admin auth
+  lib/               theme, photos + events (Supabase), zip, qr, admin auth
 supabase/
   migrations/        schema and row-level security
   functions/         photo-admin, whatsapp-intake

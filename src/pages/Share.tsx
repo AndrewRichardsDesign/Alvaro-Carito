@@ -1,8 +1,8 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { ArrowLeft, Check, ImagePlus, Loader2, MessageCircle, X } from 'lucide-react';
 import { useContent } from '@/content/ContentContext';
 import { whatsappUrl } from '@/lib/share';
-import { uploadGuestPhoto } from '@/lib/photos';
+import { uploadGuestPhoto, useEvents } from '@/lib/photos';
 import { hasPhotoBackend } from '@/lib/config';
 import { cn } from '@/lib/utils';
 
@@ -26,14 +26,55 @@ interface Item {
   error?: string;
 }
 
+/** The event slug carried by a per-event QR code, e.g. "#/share?event=ceremony". */
+function slugFromUrl(): string {
+  if (typeof window === 'undefined') return '';
+  const query = window.location.hash.split('?')[1] ?? '';
+  return new URLSearchParams(query).get('event') ?? '';
+}
+
+function subscribeToHash(onChange: () => void): () => void {
+  window.addEventListener('hashchange', onChange);
+  return () => window.removeEventListener('hashchange', onChange);
+}
+
+/**
+ * Which event the address bar currently names.
+ *
+ * Reactive rather than read-once: scanning a second QR code changes only the
+ * hash, which does not reload the page, so a guest who scanned the ceremony
+ * code and later scanned the party one would otherwise keep filing everything
+ * under the ceremony.
+ */
+function useUrlEventSlug(): string {
+  return useSyncExternalStore(subscribeToHash, slugFromUrl, () => '');
+}
+
 export function SharePage() {
   const { content } = useContent();
   const config = content.guestPhotos;
+  const { events } = useEvents();
   const [items, setItems] = useState<Item[]>([]);
   const [uploader, setUploader] = useState('');
   const [caption, setCaption] = useState('');
+  // The guest's own tap, remembered against the URL it was made under: if they
+  // scan a different code afterwards, that new scan is the fresher intent and
+  // supersedes the tap.
+  const [chosen, setChosen] = useState<{ forSlug: string; id: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const choices = useMemo(() => events.filter((e) => e.active), [events]);
+  const urlSlug = useUrlEventSlug();
+
+  // A QR code printed for one part of the weekend answers the question before
+  // it is asked, and a single event leaves nothing to choose between. Either
+  // way the guest can override it by tapping another.
+  const suggested =
+    choices.find((e) => e.slug === urlSlug) ?? (choices.length === 1 ? choices[0] : null);
+  const eventId = (chosen?.forSlug === urlSlug ? chosen.id : null) ?? suggested?.id ?? null;
+
+  const mustChoose = choices.length > 1 && !eventId;
 
   const wa = whatsappUrl(config.whatsappNumber, config.whatsappMessage);
   const done = items.filter((i) => i.status === 'done').length;
@@ -59,7 +100,7 @@ export function SharePage() {
       if (item.status === 'done' || item.status === 'uploading') continue;
       setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, status: 'uploading' } : i)));
       try {
-        await uploadGuestPhoto(item.file, { uploader, caption });
+        await uploadGuestPhoto(item.file, { uploader, caption, eventId });
         setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, status: 'done' } : i)));
       } catch (e) {
         const error = e instanceof Error ? e.message : 'Upload failed';
@@ -101,6 +142,30 @@ export function SharePage() {
               <div className="mt-8 flex items-start gap-3 rounded-[var(--radius)] border border-accent/30 bg-accent/10 px-5 py-4">
                 <Check className="mt-0.5 h-5 w-5 flex-none text-accent" />
                 <p className="text-sm leading-relaxed text-ink">{config.thanks}</p>
+              </div>
+            )}
+
+            {choices.length > 1 && (
+              <div className="mt-8 space-y-2">
+                <span className="eyebrow">Which part of the weekend?</span>
+                <div className="flex flex-wrap gap-2">
+                  {choices.map((event) => (
+                    <button
+                      key={event.id}
+                      type="button"
+                      onClick={() => setChosen({ forSlug: urlSlug, id: event.id })}
+                      aria-pressed={eventId === event.id}
+                      className={cn(
+                        'rounded-full border px-4 py-2 text-xs transition-colors',
+                        eventId === event.id
+                          ? 'border-accent bg-accent text-accent-ink'
+                          : 'border-line text-muted hover:border-accent/60 hover:text-accent'
+                      )}
+                    >
+                      {event.name}
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
 
@@ -186,11 +251,17 @@ export function SharePage() {
                 <button
                   type="button"
                   onClick={upload}
-                  disabled={busy || !pending}
+                  disabled={busy || !pending || mustChoose}
                   className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-accent px-7 py-4 text-[0.75rem] font-medium uppercase tracking-[0.18em] text-accent-ink transition-all hover:brightness-110 disabled:opacity-50"
                 >
                   {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                  {busy ? `Sending ${done + 1} of ${items.length}…` : pending ? 'Send them' : 'All sent'}
+                  {busy
+                    ? `Sending ${done + 1} of ${items.length}…`
+                    : mustChoose
+                      ? 'Choose an event first'
+                      : pending
+                        ? 'Send them'
+                        : 'All sent'}
                 </button>
               </>
             )}

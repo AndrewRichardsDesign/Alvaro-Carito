@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import QRCode from 'qrcode';
+import { qrDataUrl } from '@/lib/qr';
 
 /**
  * A QR code rendered to a data URL at mount.
@@ -26,12 +26,7 @@ export function QrCode({
 
   useEffect(() => {
     let cancelled = false;
-    QRCode.toDataURL(value, {
-      width: size * 2, // 2× so it stays crisp on a retina screen and in print
-      margin: 1,
-      errorCorrectionLevel: 'M',
-      color: { dark, light },
-    })
+    qrDataUrl(value, size, dark, light)
       .then((url) => {
         if (!cancelled) {
           setDataUrl(url);

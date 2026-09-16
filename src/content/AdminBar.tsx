@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import {
-  Check, Download, ExternalLink, Eye, EyeOff, List, Loader2, LogOut, Move, Palette, Plus,
-  RotateCcw, Save, Upload, X,
+  CalendarDays, Check, Download, ExternalLink, Eye, EyeOff, List, Loader2, LogOut, Move, Palette,
+  Plus, RotateCcw, Save, Upload, X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,6 +11,7 @@ import { saveBlob } from '@/lib/zip';
 import { ADMIN_TARGET, useContent } from './ContentContext';
 import { ContentEditorPanel } from './ContentEditorPanel';
 import { ThemePanel } from './ThemePanel';
+import { EventsPanel } from './EventsPanel';
 import type { SiteContent } from './types';
 
 /**
@@ -31,6 +32,7 @@ export function AdminBar() {
   const [open, setOpen] = useState(false);
   const [fieldsOpen, setFieldsOpen] = useState(false);
   const [themeOpen, setThemeOpen] = useState(false);
+  const [eventsOpen, setEventsOpen] = useState(false);
   const importRef = useRef<HTMLInputElement>(null);
 
   if (!isAdmin) return null;
@@ -57,6 +59,7 @@ export function AdminBar() {
     <>
       <ContentEditorPanel open={fieldsOpen} onClose={() => setFieldsOpen(false)} />
       <ThemePanel open={themeOpen} onClose={() => setThemeOpen(false)} />
+      <EventsPanel open={eventsOpen} onClose={() => setEventsOpen(false)} />
 
       {arrangeMode && (
         <div className="admin-surface fixed left-1/2 top-4 z-[100] max-w-[calc(100%-2rem)] -translate-x-1/2 rounded-full border border-primary/30 bg-background/95 px-4 py-1.5 text-center text-xs font-medium !text-primary shadow-lg backdrop-blur">
@@ -119,6 +122,10 @@ export function AdminBar() {
 
             <Button size="sm" variant="outline" className="h-8 gap-1.5 px-2.5 text-xs" onClick={() => setThemeOpen(true)}>
               <Palette className="h-3.5 w-3.5" /> Look
+            </Button>
+
+            <Button size="sm" variant="outline" className="h-8 gap-1.5 px-2.5 text-xs" onClick={() => setEventsOpen(true)}>
+              <CalendarDays className="h-3.5 w-3.5" /> Events
             </Button>
 
             <Button size="sm" variant="outline" className="h-8 gap-1.5 px-2.5 text-xs" onClick={() => setFieldsOpen(true)}>
