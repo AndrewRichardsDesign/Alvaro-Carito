@@ -182,8 +182,15 @@ npm run build    # typecheck + production build
 npm run lint
 ```
 
-Pushing to `main` deploys to GitHub Pages via `.github/workflows/deploy.yml`,
-so an admin save is live a minute or two later.
+Pushing deploys to GitHub Pages via `.github/workflows/deploy.yml`, so an admin
+save is live a minute or two later.
+
+**GitHub Pages must be set to "GitHub Actions", not "Deploy from a branch"**
+(Settings → Pages → Source). This is a Vite app: the `index.html` in the
+repository root is a source file pointing at `/src/main.tsx`, which no browser
+can execute. Left on the branch setting, Pages publishes that file verbatim and
+the site comes up blank. The workflow asks to switch the setting itself, but
+the first run has to get far enough to do it.
 
 ## How it fits together
 

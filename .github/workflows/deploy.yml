@@ -2,7 +2,10 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    # This repository has no `main` yet — the working branch is the default
+    # branch — so the workflow has to answer to both, or it never runs at all
+    # and Pages quietly serves the unbuilt source instead.
+    branches: [main, 'claude/**']
   workflow_dispatch:
 
 permissions:
@@ -30,6 +33,12 @@ jobs:
       - run: npm ci
       - run: npm run build
       - uses: actions/configure-pages@v5
+        with:
+          # Switches the Pages source to GitHub Actions if it is still set to
+          # "deploy from a branch". Without this the legacy builder publishes
+          # the repository root — whose index.html points at /src/main.tsx,
+          # which no browser can run, so the site comes up blank.
+          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
