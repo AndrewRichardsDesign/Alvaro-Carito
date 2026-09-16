@@ -186,11 +186,20 @@ Pushing deploys to GitHub Pages via `.github/workflows/deploy.yml`, so an admin
 save is live a minute or two later.
 
 **GitHub Pages must be set to "GitHub Actions", not "Deploy from a branch"**
-(Settings → Pages → Source). This is a Vite app: the `index.html` in the
-repository root is a source file pointing at `/src/main.tsx`, which no browser
-can execute. Left on the branch setting, Pages publishes that file verbatim and
-the site comes up blank. The workflow asks to switch the setting itself, but
-the first run has to get far enough to do it.
+— Settings → Pages → Source. This is the one setting that cannot be configured
+from code, and the site does not work without it.
+
+This is a Vite app: the `index.html` in the repository root is a *source* file
+pointing at `/src/main.tsx`, which no browser can execute. On the branch
+setting, GitHub's legacy builder publishes that file verbatim and the site
+comes up blank.
+
+Worse, the two coexist badly. While the branch setting is on, every push starts
+*both* builders — this workflow and the legacy one — and whichever finishes
+last wins. The legacy one is usually slower, so it overwrites the real build
+and you get a half-deployed site: `index.html` from one deploy, missing
+`assets/` and `uploads/` from the other. Switching the source to GitHub Actions
+stops the legacy builder running at all.
 
 ## How it fits together
 
