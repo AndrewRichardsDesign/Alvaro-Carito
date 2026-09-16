@@ -34,10 +34,11 @@ jobs:
       - run: npm run build
       - uses: actions/configure-pages@v5
         with:
-          # Switches the Pages source to GitHub Actions if it is still set to
-          # "deploy from a branch". Without this the legacy builder publishes
-          # the repository root — whose index.html points at /src/main.tsx,
-          # which no browser can run, so the site comes up blank.
+          # Turns Pages on if it has never been enabled. It does NOT change an
+          # existing "deploy from a branch" setting — that has to be switched
+          # by hand in Settings → Pages → Source → GitHub Actions. Until it is,
+          # the legacy builder also runs on every push and, being slower,
+          # overwrites this deploy with the unbuilt repository root.
           enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
