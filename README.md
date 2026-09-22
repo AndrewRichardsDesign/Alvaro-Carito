@@ -182,8 +182,13 @@ npm run build    # typecheck + production build
 npm run lint
 ```
 
-Pushing deploys to GitHub Pages via `.github/workflows/deploy.yml`, so an admin
-save is live a minute or two later.
+Pushing to `main` deploys to GitHub Pages via `.github/workflows/deploy.yml`,
+so an admin save is live a minute or two later. Other branches don't deploy —
+merge them into `main` when you want them on the site.
+
+Admin mode commits to whichever branch the running site was *built* from
+(injected as `VITE_DEPLOY_BRANCH`), so a save from the live site goes to `main`
+and comes back around through the same workflow.
 
 **GitHub Pages must be set to "GitHub Actions", not "Deploy from a branch"**
 — Settings → Pages → Source. This is the one setting that cannot be configured

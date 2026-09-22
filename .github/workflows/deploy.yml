@@ -2,10 +2,11 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    # This repository has no `main` yet — the working branch is the default
-    # branch — so the workflow has to answer to both, or it never runs at all
-    # and Pages quietly serves the unbuilt source instead.
-    branches: [main, 'claude/**']
+    # `main` only. Work happens on branches and reaches the live site by being
+    # merged — if a working branch deployed too, pushing to it would quietly
+    # overwrite production, and admin saves would land on whichever branch
+    # deployed last.
+    branches: [main]
   workflow_dispatch:
 
 permissions:
