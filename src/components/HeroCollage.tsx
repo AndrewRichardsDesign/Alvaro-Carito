@@ -26,14 +26,14 @@ interface Slot {
 }
 
 const SLOTS: Slot[] = [
-  { top: '6%', left: '4%', width: '17vw', rotate: -6, depth: 0.16 },
-  { top: '46%', left: '1%', width: '14vw', rotate: 4, depth: 0.3 },
-  { top: '10%', left: '77%', width: '18vw', rotate: 5, depth: 0.2 },
-  { top: '52%', left: '81%', width: '15vw', rotate: -4, depth: 0.34 },
-  { top: '70%', left: '15%', width: '13vw', rotate: 7, depth: 0.44 },
-  { top: '74%', left: '64%', width: '12vw', rotate: -7, depth: 0.4 },
-  { top: '24%', left: '88%', width: '11vw', rotate: -3, depth: 0.52 },
-  { top: '30%', left: '-3%', width: '11vw', rotate: 8, depth: 0.5 },
+  { top: '6%', left: '4%', width: '17cqw', rotate: -6, depth: 0.16 },
+  { top: '46%', left: '1%', width: '14cqw', rotate: 4, depth: 0.3 },
+  { top: '10%', left: '77%', width: '18cqw', rotate: 5, depth: 0.2 },
+  { top: '52%', left: '81%', width: '15cqw', rotate: -4, depth: 0.34 },
+  { top: '70%', left: '15%', width: '13cqw', rotate: 7, depth: 0.44 },
+  { top: '74%', left: '64%', width: '12cqw', rotate: -7, depth: 0.4 },
+  { top: '24%', left: '88%', width: '11cqw', rotate: -3, depth: 0.52 },
+  { top: '30%', left: '-3%', width: '11cqw', rotate: 8, depth: 0.5 },
 ];
 
 export function HeroCollage({
@@ -83,11 +83,15 @@ export function HeroCollage({
 
   return (
     <>
-      {/* Desktop: the scattered composition. */}
+      {/* Desktop: the scattered composition. Tile widths are given in `cqw`,
+          so they measure this box rather than the browser window. Full-bleed on
+          the real page the two are identical; inside the section palette's
+          scaled-down preview, only this one is right. */}
       <div
         ref={containerRef}
         aria-hidden={!isAdmin}
         className="pointer-events-none absolute inset-0 hidden md:block"
+        style={{ containerType: 'inline-size' }}
       >
         {tiles.map((tile, i) => {
           const slot = SLOTS[i];

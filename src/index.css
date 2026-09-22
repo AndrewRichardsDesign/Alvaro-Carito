@@ -164,6 +164,26 @@
   @apply text-muted/70;
 }
 
+/* Section palette previews ----------------------------------------------- */
+
+/* A preview is a still life. Scroll reveals would leave it blank until an
+   observer happened to fire, and nothing inside it should be clickable. */
+.ac-section-preview {
+  pointer-events: none;
+  user-select: none;
+}
+
+.ac-section-preview .reveal {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+/* Entrance animations would replay on every hover. */
+.ac-section-preview * {
+  animation: none !important;
+}
+
 /* Drag and drop ---------------------------------------------------------- */
 
 /* The element being dragged follows the pointer; everything else slides. */

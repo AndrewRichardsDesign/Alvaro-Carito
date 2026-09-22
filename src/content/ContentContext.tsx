@@ -18,7 +18,20 @@ import defaultContent from './site-content.json';
 const CONTENT_PATH = 'src/content/site-content.json';
 const REPO_OWNER = 'AndrewRichardsDesign';
 const REPO_NAME = 'Alvaro-Carito';
-const DEFAULT_BRANCH = 'main';
+/**
+ * The branch admin edits are committed to.
+ *
+ * Injected at build time from the branch the site was deployed from, because
+ * the right answer is "wherever this site came from" — hard-coding `main` sends
+ * saves to a branch that may not exist, and the failure reads as an auth error.
+ */
+const DEFAULT_BRANCH = import.meta.env.VITE_DEPLOY_BRANCH || 'main';
+
+/** Said whenever GitHub rejects the credential, wherever in the save it happens. */
+const TOKEN_MESSAGE =
+  'GitHub rejected that token. It needs to be a fine-grained personal access ' +
+  'token from github.com/settings/tokens — it starts with "github_pat_" — with ' +
+  'Contents: Read and write on this repository. It is not the site password.';
 
 const DRAFT_KEY = 'ac.content.draft';
 const TOKEN_KEY = 'ac.admin.token';
@@ -381,6 +394,9 @@ export function ContentProvider({ isAdmin, children }: { isAdmin: boolean; child
         });
         if (res.ok) return ((await res.json()) as { sha?: string }).sha;
         if (res.status === 404) return undefined; // not committed yet
+        // A bad token fails here first, on the read, so it has to be named
+        // here too — "could not read the file (401)" tells nobody anything.
+        if (res.status === 401 || res.status === 403) throw new Error(TOKEN_MESSAGE);
         throw new Error(`Could not read the existing file (${res.status}).`);
       };
 
@@ -410,7 +426,9 @@ export function ContentProvider({ isAdmin, children }: { isAdmin: boolean; child
           /* ignore */
         }
         if (res.status === 401 || res.status === 403) {
-          detail = 'Authentication failed — check the token has "Contents: write" on this repo.';
+          detail = TOKEN_MESSAGE;
+        } else if (res.status === 404 || res.status === 422) {
+          detail = `The branch "${branch}" doesn't exist in ${REPO_OWNER}/${REPO_NAME}. Check the branch box next to the token.`;
         } else if (res.status === 409) {
           detail = 'The file changed while saving — press Save again.';
         }
@@ -487,6 +505,38 @@ export function ContentProvider({ isAdmin, children }: { isAdmin: boolean; child
     ]
   );
 
+  return <ContentContext.Provider value={value}>{children}</ContentContext.Provider>;
+}
+
+/**
+ * Renders children against a throwaway one-section document.
+ *
+ * The section palette wants to show what a template actually looks like, and
+ * every section renderer reads its copy out of the content store by path. So
+ * rather than maintaining a second set of mock components that would drift out
+ * of step with the real ones, the preview nests a provider whose document
+ * contains only the section being previewed, at `sections.0`. Everything else —
+ * the theme, the photo store — is the real thing, so a preview is painted in
+ * the couple's own colours and typefaces.
+ */
+export function PreviewContentProvider({
+  section,
+  children,
+}: {
+  section: Section;
+  children: ReactNode;
+}) {
+  const real = useContent();
+  const value = useMemo<ContentContextValue>(
+    () => ({
+      ...real,
+      // A preview is a picture, not a workspace: no editing affordances, and
+      // nothing it does can reach the real document.
+      isAdmin: false,
+      content: { ...real.content, sections: [section] },
+    }),
+    [real, section]
+  );
   return <ContentContext.Provider value={value}>{children}</ContentContext.Provider>;
 }
 

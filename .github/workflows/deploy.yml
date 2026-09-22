@@ -32,6 +32,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+        env:
+          # Admin saves commit back to whichever branch this site was built
+          # from, rather than guessing at `main`.
+          VITE_DEPLOY_BRANCH: ${{ github.ref_name }}
       - uses: actions/configure-pages@v5
         with:
           # Turns Pages on if it has never been enabled. It does NOT change an
