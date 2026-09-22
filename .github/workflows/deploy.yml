@@ -37,6 +37,30 @@ jobs:
           # Admin saves commit back to whichever branch this site was built
           # from, rather than guessing at `main`.
           VITE_DEPLOY_BRANCH: ${{ github.ref_name }}
+      # `configure-pages` only *enables* Pages; it will not convert a site that
+      # is already set to "deploy from a branch". This does, and it is the whole
+      # ball game: while the branch source is on, GitHub's legacy builder
+      # republishes the unbuilt repository root over every deploy, and the
+      # github-pages environment stays locked to that one branch, so deploying
+      # from main is rejected before it starts.
+      - name: Make Pages build from this workflow, not from a branch
+        run: |
+          code=$(curl -sS -o /tmp/pages.json -w '%{http_code}' -X PUT \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/pages" \
+            -d '{"build_type":"workflow"}')
+          echo "PUT /pages -> $code"
+          cat /tmp/pages.json || true
+          if [ "$code" = "204" ] || [ "$code" = "200" ]; then
+            echo "Pages now builds from this workflow."
+          else
+            echo "::warning::Could not switch the Pages source automatically (HTTP $code). Set Settings -> Pages -> Source to GitHub Actions by hand."
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - uses: actions/configure-pages@v5
         with:
           # Turns Pages on if it has never been enabled. It does NOT change an
