@@ -2,11 +2,13 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    # `main` only. Work happens on branches and reaches the live site by being
-    # merged — if a working branch deployed too, pushing to it would quietly
-    # overwrite production, and admin saves would land on whichever branch
-    # deployed last.
-    branches: [main]
+    # `main` is production. The old working branch is here only because the
+    # github-pages *environment* still restricts deployments to it — a separate
+    # setting from the Pages source, and one that switching the source does not
+    # always rewrite. Clear it under Settings -> Environments -> github-pages ->
+    # "Deployment branches and tags", then drop the second entry here: while
+    # both deploy, whichever push lands last is what the live site shows.
+    branches: [main, 'claude/**']
   workflow_dispatch:
 
 permissions:
